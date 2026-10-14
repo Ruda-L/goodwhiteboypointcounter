@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Good White Boy Counter 🤍</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #431467; /* Deep cozy purple */
+            color: #fae8ff;
+            font-family: 'Space Mono', monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background-color: #581c87;
+            border: 4px solid #f3e8ff;
+            border-radius: 24px;
+            padding: 40px 50px;
+            text-align: center;
+            box-shadow: 8px 8px 0px #2e1065;
+            max-width: 420px;
+            width: 90%;
+        }
+
+        h1 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.5rem;
+            color: #f7fee7;
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        #counter-value {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 7rem;
+            font-weight: 700;
+            color: #ffffff; /* Silly bright yellow pop */
+            margin: 10px 0 30px 0;
+            text-shadow: 4px 4px 0px #2e1065;
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        button {
+            background-color: #c084fc;
+            color: #2e1065;
+            border: 3px solid #2e1065;
+            border-radius: 16px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            width: 70px;
+            height: 70px;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px #2e1065;
+            transition: transform 0.1s ease, background-color 0.1s ease;
+        }
+
+        button:hover {
+            background-color: #e879f9;
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px #2e1065;
+        }
+
+        button:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px #2e1065;
+        }
+
+        .footer-actions {
+            margin-top: 35px;
+        }
+
+        .sub-btn {
+            background: transparent;
+            border: 2px dashed #d8b4fe;
+            color: #e9d5ff;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            cursor: pointer;
+            width: auto;
+            height: auto;
+            box-shadow: none;
+        }
+
+        .sub-btn:hover {
+            background: #6b21a8;
+            color: #ffffff;
+            border-style: solid;
+            transform: none;
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h1> Good White Boy Point Counter </h1>
+        <div id="counter-value">{{count}}</div>
+        
+        {{#if isAdmin}}
+            <div class="controls">
+                <button onclick="modify('decrement')">-</button>
+                <button onclick="modify('increment')">+</button>
+            </div>
+            <div class="footer-actions">
+                <button class="sub-btn" onclick="handleLogout()">[ I'm not Lachlan no more button ]</button>
+            </div>
+        {{else}}
+            <div class="footer-actions">
+                <button class="sub-btn" onclick="handleLogin()">[I'm Lachlan button]</button>
+            </div>
+        {{/if}}
+    </div>
+
+    <script>
+        async function fetchCount() {
+            try {
+                const res = await fetch('/api/count');
+                const data = await res.json();
+                document.getElementById('counter-value').textContent = data.value;
+            } catch (e) { console.error(e); }
+        }
+
+        async function modify(action) {
+            const res = await fetch('/api/modify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action })
+            });
+            if (res.ok) {
+                const data = await res.json();
+                document.getElementById('counter-value').textContent = data.value;
+            } else {
+                alert("no");
+            }
+        }
+
+        async function handleLogin() {
+            const password = prompt("Lachlans password");
+            if (!password) return;
+
+            const res = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password })
+            });
+
+            if (res.ok) {
+                window.location.reload();
+            } else {
+                alert("You're NOT lachlan");
+            }
+        }
+
+        async function handleLogout() {
+            await fetch('/api/logout', { method: 'POST' });
+            window.location.reload();
+        }
+
+        // Keep everyone's view synced every 3 seconds
+        setInterval(fetchCount, 3000);
+    </script>
+</body>
+</html>

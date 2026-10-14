@@ -1,0 +1,15 @@
+{
+  "name": "purple-counter",
+  "version": "1.0.0",
+  "description": "Good white boy points",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.0.0",
+    "cookie-parser": "^1.4.6",
+    "express": "^4.19.2",
+    "express-handlebars": "^7.1.3"
+  }
+}
